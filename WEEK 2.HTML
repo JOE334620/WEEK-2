@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Builder</title>
+  <style>
+    /* Basic Styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    header {
+      background-color: #4CAF50;
+      color: white;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    main {
+      padding: 2rem;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #workspace {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .portfolio-section {
+      padding: 1rem;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: grab;
+    }
+    .portfolio-section:active {
+      cursor: grabbing;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #4CAF50;
+      color: white;
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Portfolio Builder</h1>
+    <button id="darkModeToggle">Toggle Dark Mode</button>
+  </header>
+
+  <main>
+    <section id="editor">
+      <h2>Customize Your Portfolio</h2>
+      <button id="addSection">Add Section</button>
+      <div id="workspace" ondragover="event.preventDefault()"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Portfolio Builder</p>
+  </footer>
+
+  <script>
+    // Dark Mode Toggle
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    darkModeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+    });
+
+    // Add Section Functionality
+    const addSectionButton = document.getElementById('addSection');
+    const workspace = document.getElementById('workspace');
+    let sectionCounter = 0;
+
+    addSectionButton.addEventListener('click', () => {
+      const sectionName = prompt('Enter section name:');
+      if (!sectionName) {
+        alert('Section name cannot be empty!');
+        return;
+      }
+      sectionCounter++;
+      const newSection = document.createElement('div');
+      newSection.textContent = sectionName;
+      newSection.className = 'portfolio-section';
+      newSection.draggable = true;
+      newSection.id = `section-${sectionCounter}`;
+
+      // Drag Events
+      newSection.addEventListener('dragstart', (event) => {
+        event.dataTransfer.setData('text/plain', event.target.id);
+      });
+
+      workspace.appendChild(newSection);
+    });
+
+    // Handle Drag-and-Drop Reordering
+    workspace.addEventListener('drop', (event) => {
+      event.preventDefault();
+      const draggedId = event.dataTransfer.getData('text');
+      const draggedElement = document.getElementById(draggedId);
+      const targetElement = event.target.closest('.portfolio-section');
+
+      if (targetElement && targetElement !== draggedElement) {
+        workspace.insertBefore(draggedElement, targetElement);
+      }
+    });
+
+    // Optional Dark Mode Styling
+    document.body.classList.add('dark-mode');
+    document.head.insertAdjacentHTML('beforeend', `
+      <style>
+        body.dark-mode {
+          background-color: #333;
+          color: #fff;
+        }
+        body.dark-mode header, body.dark-mode footer {
+          background-color: #222;
+        }
+        body.dark-mode button {
+          background-color: #555;
+          color: #fff;
+        }
+        body.dark-mode button:hover {
+          background-color: #444;
+        }
+        body.dark-mode .portfolio-section {
+          background-color: #444;
+          color: #fff;
+          border: 1px solid #666;
+        }
+      </style>
+    `);
+  </script>
+</body>
+</html>
